@@ -29,7 +29,7 @@ export class HomeController extends BaseController {
 
     try {
       const serviceDb = new DbService();
-      await serviceDb.insertStake(
+      await serviceDb.stake(
         address as string,
         txId as string,
         amount as string,
@@ -42,10 +42,31 @@ export class HomeController extends BaseController {
     this.jsonRes({success: true}, res);
   }
 
-  public async unstake(req: Request, res: Response) {
-    const {address, tx_id: txId, amount} = req.query;
+  public async stake_list(req: Request, res: Response) {
+    const {address} = req.query;
     try {
-      const checkCode = await SolanaService.validateTransaction(txId as string);
+      const serviceDb = new DbService();
+      const result = await serviceDb.listStake(address as string);
+
+      // TODO
+      return {success: true, data: result.data};
+    } catch (e) {
+      // console.log(e);
+    }
+
+    this.jsonRes({success: true}, res);
+  }
+
+  public async unstake(req: Request, res: Response) {
+    const {
+      address,
+      stake_tx_id: stakeTxId,
+      unstake_tx_id: unstakeTxId,
+    } = req.query;
+    try {
+      const checkCode = await SolanaService.validateTransaction(
+        stakeTxId as string,
+      );
       if (checkCode !== SUCCESS) {
         return {success: false, error_code: checkCode};
       }
@@ -55,10 +76,10 @@ export class HomeController extends BaseController {
 
     try {
       const serviceDb = new DbService();
-      await serviceDb.insertUnstake(
+      await serviceDb.unstake(
         address as string,
-        txId as string,
-        amount as string,
+        stakeTxId as string,
+        unstakeTxId as string,
       );
       return {success: true};
     } catch (e) {

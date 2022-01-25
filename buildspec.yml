@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - chmod 775 ./scripts/eb_config.sh
+      - |
+        if [ $CB_ENVIRONMENT = "staging" ]; then
+          ./scripts/eb_config.sh -e ${CB_ENVIRONMENT}
+        fi
+      - |
+        if [ $CB_ENVIRONMENT = "production" ]; then
+          ./scripts/eb_config.sh -e ${CB_ENVIRONMENT}
+        fi
+artifacts:
+  files:
+    - '**/*'

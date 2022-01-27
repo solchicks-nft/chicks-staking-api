@@ -1,5 +1,6 @@
 import {config} from 'dotenv';
-import dateFns from 'date-fns';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const dateFns = require('date-fns');
 
 import {SupabaseClient, createClient} from '@supabase/supabase-js';
 import {logger} from './winston';
@@ -11,7 +12,7 @@ config();
 const supabaseUrl = process.env.SUPABASE_URL as string;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string;
 
-const TBL_NAME_STAKE = 'stake_list';
+const TBL_NAME_STAKE_FLEX = 'stake_list_flex';
 const STATUS_STAKED = 0;
 const STATUS_CLAIMED = 2;
 
@@ -24,13 +25,19 @@ export class DbService {
 
   public async listStake(address: string) {
     return this.supabase
-      .from(TBL_NAME_STAKE)
+      .from(TBL_NAME_STAKE_FLEX)
       .select()
       .match({status: STATUS_STAKED, address})
       .order('stake_start_date', {ascending: true});
   }
 
-  public async stake(address: string, txId: string, amount: string) {
+  public async insertStakeFlex(
+    address: string,
+    txId: string,
+    amount: string,
+    handle: string,
+    xToken: string,
+  ) {
     const now = new Date();
     const stakeStartDate = toDateTime(now.getTime());
     const stakeEndDate = toDateTime(dateFns.addDays(now, END_DAYS).getTime());
@@ -38,13 +45,15 @@ export class DbService {
       `insertStake -- addr: ${address} tx: ${txId} amount: ${amount}`,
     );
 
-    const stake = await this.supabase.from(TBL_NAME_STAKE).insert({
+    const stake = await this.supabase.from(TBL_NAME_STAKE_FLEX).insert({
       address,
       stake_tx_hash: txId,
       amount: amount,
       stake_start_date: stakeStartDate,
       stake_end_date: stakeEndDate,
-      stake: STATUS_STAKED,
+      status: STATUS_STAKED,
+      handle,
+      x_token: xToken,
     });
 
     if (
@@ -73,7 +82,7 @@ export class DbService {
     const now = new Date();
     const stakeClaimDate = toDateTime(now.getTime());
     await this.supabase
-      .from(TBL_NAME_STAKE)
+      .from(TBL_NAME_STAKE_FLEX)
       .update({
         status: STATUS_CLAIMED,
         unstake_tx_hash: unstakeTxId,

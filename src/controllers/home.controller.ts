@@ -16,30 +16,37 @@ export class HomeController extends BaseController {
     this.jsonRes({success: true}, res);
   }
 
-  public async stake(req: Request, res: Response) {
-    const {address, tx_id: txId, amount} = req.query;
+  public async stake_flex(req: Request, res: Response) {
+    const ret = await this._stake_flex(req);
+    this.jsonRes(ret, res);
+  }
+
+  public async _stake_flex(req: Request) {
+    const {address, tx_id: txId, amount, handle, x_token} = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(txId as string);
       if (checkCode !== SUCCESS) {
         return {success: false, error_code: checkCode};
       }
     } catch (e) {
+      logger.info(`Unknown error : ${e}`);
       return {success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN};
     }
 
     try {
       const serviceDb = new DbService();
-      await serviceDb.stake(
+      await serviceDb.insertStakeFlex(
         address as string,
         txId as string,
         amount as string,
+        handle as string,
+        x_token as string,
       );
       return {success: true};
     } catch (e) {
-      // console.log(e);
+      logger.info(`Unknown db error : ${e}`);
     }
-
-    this.jsonRes({success: true}, res);
+    return {success: false};
   }
 
   public async stake_list(req: Request, res: Response) {
@@ -57,7 +64,7 @@ export class HomeController extends BaseController {
     this.jsonRes({success: true}, res);
   }
 
-  public async unstake(req: Request, res: Response) {
+  public async unstake_flex(req: Request, res: Response) {
     const {
       address,
       stake_tx_id: stakeTxId,

@@ -20,14 +20,12 @@ apiRouter.get(`${base}/flex_unstake`, (req, res) =>
   flexController.unstake(req, res),
 );
 
-apiRouter.get(`${base}/flex_list`, (req, res) =>
-  flexController.list(req, res),
-);
+apiRouter.get(`${base}/flex_list`, (req, res) => flexController.list(req, res));
 
 apiRouter.get(`${base}/locked_stake`, (req, res) =>
   lockController.stake(req, res),
 );
 
-apiRouter.get(`${base}/locked_stake`, (req, res) =>
+apiRouter.get(`${base}/locked_unstake`, (req, res) =>
   lockController.unstake(req, res),
 );

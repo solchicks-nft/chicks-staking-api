@@ -77,11 +77,7 @@ export class FlexController extends BaseController {
   }
 
   public async _unstake(req: Request) {
-    const {
-      address,
-      handle,
-      unstake_tx_id: unstakeTxId,
-    } = req.query;
+    const {address, handle, unstake_tx_id: unstakeTxId} = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(
         unstakeTxId as string,

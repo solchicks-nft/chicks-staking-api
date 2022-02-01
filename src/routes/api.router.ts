@@ -10,6 +10,10 @@ import {
 
 const base = '';
 
+apiRouter.get(`${base}/`, (req, res) =>
+  homeController.getEnvironmentSummary(req, res),
+);
+
 apiRouter.get(`${base}/status`, (req, res) =>
   homeController.serverStatus(req, res),
 );

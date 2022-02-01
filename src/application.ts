@@ -1,6 +1,6 @@
-import {Application} from 'express';
+import { Application } from 'express';
+import { logger } from './services/winston';
 import express = require('express');
-import {logger} from './services/winston';
 
 /**
  * Primary Class that constructs all of the parts of the Express server

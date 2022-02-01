@@ -1,20 +1,17 @@
-import {config} from 'dotenv';
+import { config } from 'dotenv';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { logger } from './winston';
+import { ERROR_DB_DUPLICATED, ERROR_DB_UNKNOWN } from './errors';
+import { END_DAYS } from '../utils/const';
+import { toDateTime } from '../utils/helper';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dateFns = require('date-fns');
-
-import {SupabaseClient, createClient} from '@supabase/supabase-js';
-import {logger} from './winston';
-import {ERROR_DB_DUPLICATED, ERROR_DB_UNKNOWN} from './errors';
-import {END_DAYS} from '../utils/const';
-import {toDateTime} from '../utils/helper';
 
 config();
 const supabaseUrl = process.env.SUPABASE_URL as string;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string;
-
-const TBL_NAME_STAKE_FLEX = 'stake_list_flex';
-const TBL_NAME_STAKE_LOCKED = 'stake_list_locked';
-
+const TBL_NAME_STAKE_FLEX = 'stake_flex';
+const TBL_NAME_STAKE_LOCKED = 'stake_locked';
 const STATUS_STAKED = 0;
 const STATUS_CLAIMED = 2;
 
@@ -29,8 +26,8 @@ export class DbService {
     return this.supabase
       .from(TBL_NAME_STAKE_FLEX)
       .select()
-      .match({status: STATUS_STAKED, address})
-      .order('stake_start_date', {ascending: true});
+      .match({ status: STATUS_STAKED, address })
+      .order('stake_start_date', { ascending: true });
   }
 
   public async insertStakeFlex(
@@ -68,13 +65,13 @@ export class DbService {
     ) {
       if (stake.statusText === 'Conflict') {
         logger.info(`insertStake -- Conflict error`);
-        return {success: false, error_code: ERROR_DB_DUPLICATED};
+        return { success: false, error_code: ERROR_DB_DUPLICATED };
       } else {
         logger.info(`insertStake -- Unknown error`);
-        return {success: false, error_code: ERROR_DB_UNKNOWN};
+        return { success: false, error_code: ERROR_DB_UNKNOWN };
       }
     }
-    return {success: true};
+    return { success: true };
   }
 
   public async unstakeFlex(
@@ -91,11 +88,11 @@ export class DbService {
         unstake_tx_hash: unstakeTxId,
         stake_claim_date: stakeClaimDate,
       })
-      .match({handle, address});
+      .match({ handle, address });
     if (!result || result.error) {
-      return {success: false, error_code: ERROR_DB_UNKNOWN};
+      return { success: false, error_code: ERROR_DB_UNKNOWN };
     }
-    return {success: true};
+    return { success: true };
   }
 
   public async insertStakeLocked(
@@ -124,15 +121,19 @@ export class DbService {
       !stake.data[0] ||
       !stake.data[0].id
     ) {
-      if (stake.statusText === 'Conflict') {
-        logger.info(`insertStakeLocked -- Conflict error`);
-        return {success: false, error_code: ERROR_DB_DUPLICATED};
-      } else {
-        logger.info(`insertStakeLocked -- Unknown error`);
-        return {success: false, error_code: ERROR_DB_UNKNOWN};
-      }
+      return this.processInsertStakeError(stake);
     }
-    return {success: true};
+    return { success: true };
+  }
+
+  private processInsertStakeError(stake: any) {
+    if (stake.statusText === 'Conflict') {
+      logger.info(`insertStakeLocked -- Conflict error`);
+      return { success: false, error_code: ERROR_DB_DUPLICATED };
+    } else {
+      logger.info(`insertStakeLocked -- Unknown error`);
+      return { success: false, error_code: ERROR_DB_UNKNOWN };
+    }
   }
 
   public async insertUnstakeLocked(
@@ -159,14 +160,8 @@ export class DbService {
       !stake.data[0] ||
       !stake.data[0].id
     ) {
-      if (stake.statusText === 'Conflict') {
-        logger.info(`insertStakeLocked -- Conflict error`);
-        return {success: false, error_code: ERROR_DB_DUPLICATED};
-      } else {
-        logger.info(`insertStakeLocked -- Unknown error`);
-        return {success: false, error_code: ERROR_DB_UNKNOWN};
-      }
+      return this.processInsertStakeError(stake);
     }
-    return {success: true};
+    return { success: true };
   }
 }

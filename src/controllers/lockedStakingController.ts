@@ -1,18 +1,15 @@
-import {BaseController} from './base.controller';
-import {Response, Request} from 'express';
-import {DbService} from '../services/db';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const dateFns = require('date-fns');
-import {logger} from '../services/winston';
-import {SolanaService} from '../services/solana';
+import { BaseController } from './base.controller';
+import { Request, Response } from 'express';
+import { DbService } from '../services/db';
+import { logger } from '../services/winston';
+import { SolanaService } from '../services/solana';
 import {
-  ERROR_DB_UNKNOWN,
   ERROR_TX_INVALID_INPUT_UNKNOWN,
   ERROR_UNKNOWN,
   SUCCESS,
 } from '../services/errors';
 
-export class LockController extends BaseController {
+export class LockedStakingController extends BaseController {
   constructor() {
     super();
   }
@@ -28,15 +25,15 @@ export class LockController extends BaseController {
   }
 
   public async _stake(req: Request) {
-    const {address, tx_id: txId, amount, x_token} = req.query;
+    const { address, tx_id: txId, amount, x_token } = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(txId as string);
       if (checkCode !== SUCCESS) {
-        return {success: false, error_code: checkCode};
+        return { success: false, error_code: checkCode };
       }
     } catch (e) {
-      logger.info(`Unknown error : ${e}`);
-      return {success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN};
+      logger.info(`stake -> error: ${JSON.stringify(e)}`);
+      return { success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN };
     }
 
     try {
@@ -48,20 +45,20 @@ export class LockController extends BaseController {
         x_token as string,
       );
     } catch (e) {
-      logger.info(`Unknown db error : ${e}`);
+      logger.info(`stake -> error: ${JSON.stringify(e)}`);
     }
-    return {success: false, error_code: ERROR_UNKNOWN};
+    return { success: false, error_code: ERROR_UNKNOWN };
   }
 
   public async _unstake(req: Request) {
-    const {address, tx_id: txId, x_token: xToken} = req.query;
+    const { address, tx_id: txId, x_token: xToken } = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(txId as string);
       if (checkCode !== SUCCESS) {
-        return {success: false, error_code: checkCode};
+        return { success: false, error_code: checkCode };
       }
     } catch (e) {
-      return {success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN};
+      return { success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN };
     }
 
     try {
@@ -72,9 +69,9 @@ export class LockController extends BaseController {
         xToken as string,
       );
     } catch (e) {
-      // console.log(e);
+      logger.info(`unstake -> error: ${JSON.stringify(e)}`);
     }
 
-    return {success: false, error_code: ERROR_UNKNOWN};
+    return { success: false, error_code: ERROR_UNKNOWN };
   }
 }

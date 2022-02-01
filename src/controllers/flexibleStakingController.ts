@@ -1,10 +1,8 @@
-import {BaseController} from './base.controller';
-import {Response, Request} from 'express';
-import {DbService} from '../services/db';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const dateFns = require('date-fns');
-import {logger} from '../services/winston';
-import {SolanaService} from '../services/solana';
+import { BaseController } from './base.controller';
+import { Request, Response } from 'express';
+import { DbService } from '../services/db';
+import { logger } from '../services/winston';
+import { SolanaService } from '../services/solana';
 import {
   ERROR_DB_UNKNOWN,
   ERROR_TX_INVALID_INPUT_UNKNOWN,
@@ -12,7 +10,7 @@ import {
   SUCCESS,
 } from '../services/errors';
 
-export class FlexController extends BaseController {
+export class FlexibleStakingController extends BaseController {
   constructor() {
     super();
   }
@@ -33,15 +31,15 @@ export class FlexController extends BaseController {
   }
 
   public async _stake(req: Request) {
-    const {address, tx_id: txId, amount, handle, x_token} = req.query;
+    const { address, tx_id: txId, amount, handle, x_token } = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(txId as string);
       if (checkCode !== SUCCESS) {
-        return {success: false, error_code: checkCode};
+        return { success: false, error_code: checkCode };
       }
     } catch (e) {
-      logger.info(`Unknown error : ${e}`);
-      return {success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN};
+      logger.info(`stake -> error: ${JSON.stringify(e)}`);
+      return { success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN };
     }
 
     try {
@@ -54,39 +52,38 @@ export class FlexController extends BaseController {
         x_token as string,
       );
     } catch (e) {
-      logger.info(`Unknown db error : ${e}`);
+      logger.info(`stake -> error: ${JSON.stringify(e)}`);
     }
-    return {success: false, error_code: ERROR_UNKNOWN};
+    return { success: false, error_code: ERROR_UNKNOWN };
   }
 
   public async _list(req: Request) {
-    const {address} = req.query;
+    const { address } = req.query;
     try {
       const serviceDb = new DbService();
       const result = await serviceDb.listStake(address as string);
 
       if (result.error) {
-        return {success: false, error_code: ERROR_DB_UNKNOWN};
+        return { success: false, error_code: ERROR_DB_UNKNOWN };
       }
-      return {success: true, data: result.data};
+      return { success: true, data: result.data };
     } catch (e) {
-      // console.log(e);
+      logger.info(`list -> error: ${JSON.stringify(e)}`);
     }
-
-    return {success: false, error_code: ERROR_UNKNOWN};
+    return { success: false, error_code: ERROR_UNKNOWN };
   }
 
   public async _unstake(req: Request) {
-    const {address, handle, unstake_tx_id: unstakeTxId} = req.query;
+    const { address, handle, unstake_tx_id: unstakeTxId } = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(
         unstakeTxId as string,
       );
       if (checkCode !== SUCCESS) {
-        return {success: false, error_code: checkCode};
+        return { success: false, error_code: checkCode };
       }
     } catch (e) {
-      return {success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN};
+      return { success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN };
     }
 
     try {
@@ -97,9 +94,9 @@ export class FlexController extends BaseController {
         unstakeTxId as string,
       );
     } catch (e) {
-      // console.log(e);
+      logger.info(`unstake -> error: ${JSON.stringify(e)}`);
     }
 
-    return {success: false, error_code: ERROR_UNKNOWN};
+    return { success: false, error_code: ERROR_UNKNOWN };
   }
 }

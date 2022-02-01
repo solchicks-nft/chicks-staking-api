@@ -1,7 +1,7 @@
-import {HomeController} from './home.controller';
-import {FlexController} from './flex.controller';
-import {LockController} from './lock.controller';
+import { HomeController } from './home.controller';
+import { FlexibleStakingController } from './flexibleStakingController';
+import { LockedStakingController } from './lockedStakingController';
 
 export const homeController = new HomeController();
-export const flexController = new FlexController();
-export const lockController = new LockController();
+export const flexibleStakingController = new FlexibleStakingController();
+export const lockedStakingController = new LockedStakingController();

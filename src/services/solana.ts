@@ -1,16 +1,8 @@
-import {
-  Connection,
-  PublicKey,
-  Keypair,
-  clusterApiUrl,
-  Signer,
-} from '@solana/web3.js';
-
-import {SOLANA_NETWORK} from '../utils/const';
-
-import {SUCCESS, ERROR_TX_INVALID_STATUS} from './errors';
-import {logger} from './winston';
-import {sleep} from '../utils/helper';
+import { clusterApiUrl, Connection } from '@solana/web3.js';
+import { SOLANA_NETWORK } from '../utils/const';
+import { ERROR_TX_INVALID_STATUS, SUCCESS } from './errors';
+import { logger } from './winston';
+import { sleep } from '../utils/helper';
 
 export class SolanaService {
   public static async getTransactionInfo(txId: string) {

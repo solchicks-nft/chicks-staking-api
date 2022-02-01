@@ -1,4 +1,4 @@
-import {format} from 'date-fns-tz';
+import { format } from 'date-fns-tz';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const formatUnits = require('@ethersproject/units').formatUnits;
@@ -17,7 +17,7 @@ export const toDateTime = (ts: number) => {
   return format(
     new Date().setTime(ts < 10000000000 ? ts * 1000 : ts),
     "yyyy-MM-dd'T'HH:mm:ssXXX",
-    {timeZone: 'GMT'},
+    { timeZone: 'GMT' },
   );
 };
 

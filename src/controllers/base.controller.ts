@@ -1,10 +1,10 @@
-import {Response} from 'express';
+import { Response } from 'express';
 
 /**
  * Provides functions to be used with express routes. Serves common CRUD fuctionality.
  */
 export class BaseController {
-  public useModReturnNew = {useFindAndModify: false, new: true};
+  public useModReturnNew = { useFindAndModify: false, new: true };
 
   constructor() {}
 
@@ -24,6 +24,6 @@ export class BaseController {
    * @param status custom status code, defaults to 500
    */
   errRes(err: any, res: Response, message = 'Sever Error', status = 500) {
-    res.status(status).json({error: message});
+    res.status(status).json({ error: message });
   }
 }

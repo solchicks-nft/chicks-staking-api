@@ -1,2 +1,6 @@
-### Import investors
-ts-node ./scripts/import.ts
+# SolChicks Staking API
+
+### start
+```shell
+npm start
+```

@@ -18,7 +18,7 @@ export class App {
     private port: number,
     middleware: Array<any>,
     routes: Array<express.Router>,
-    private apiPath: string = '/api',
+    private apiPath: string = '',
   ) {
     this.app = express();
     this.middleware(middleware);

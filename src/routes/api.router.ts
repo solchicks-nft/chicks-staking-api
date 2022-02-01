@@ -8,9 +8,9 @@ import {
   lockedStakingController,
 } from '../controllers/controllers.module';
 
-const base = '';
+const base = '/api';
 
-apiRouter.get(`${base}/`, (req, res) =>
+apiRouter.get(`/`, (req, res) =>
   homeController.getEnvironmentSummary(req, res),
 );
 

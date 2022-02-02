@@ -39,9 +39,11 @@ export class DbService {
   ) {
     const now = new Date();
     const stakeStartDate = toDateTime(now.getTime());
-    const stakeEndDate = toDateTime(dateFns.addDays(now, FLEX_END_DAYS).getTime());
+    const stakeEndDate = toDateTime(
+      dateFns.addDays(now, FLEX_END_DAYS).getTime(),
+    );
     logger.info(
-      `insertStakeFlex -> addr: ${address}, tx: ${txId}, amount: ${amount}, handle: ${handle}, xToken: ${xToken}`,
+      `insertStakeFlex -> address: ${address}, tx: ${txId}, amount: ${amount}, handle: ${handle}, xToken: ${xToken}`,
     );
 
     const stake = await this.supabase.from(TBL_NAME_STAKE_FLEX).insert({
@@ -102,7 +104,7 @@ export class DbService {
     xToken: string,
   ) {
     logger.info(
-      `insertStakeLocked -> addr: ${address}, tx: ${txId}, amount: ${amount}, xToken: ${xToken}`,
+      `insertStakeLocked -> address: ${address}, tx: ${txId}, amount: ${amount}, xToken: ${xToken}`,
     );
 
     const stake = await this.supabase.from(TBL_NAME_STAKE_LOCKED).insert({
@@ -142,7 +144,7 @@ export class DbService {
     xToken: string,
   ) {
     logger.info(
-      `insertUnstakeLocked -> addr: ${address} tx: ${txId} x_token: ${xToken}`,
+      `insertUnstakeLocked -> address: ${address} tx: ${txId} x_token: ${xToken}`,
     );
 
     const stake = await this.supabase.from(TBL_NAME_STAKE_LOCKED).insert({

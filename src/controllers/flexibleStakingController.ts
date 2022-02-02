@@ -74,7 +74,10 @@ export class FlexibleStakingController extends BaseController {
   }
 
   public async _unstake(req: Request) {
-    const { address, handle, unstake_tx_id: unstakeTxId } = req.query;
+    const { address, handle, tx_id: unstakeTxId } = req.query;
+    logger.info(`unstake -> address: ${address as string}`);
+    logger.info(`unstake -> handle: ${handle as string}`);
+    logger.info(`unstake -> tx_id: ${unstakeTxId as string}`);
     try {
       const checkCode = await SolanaService.validateTransaction(
         unstakeTxId as string,

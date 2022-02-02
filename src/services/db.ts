@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { logger } from './winston';
 import { ERROR_DB_DUPLICATED, ERROR_DB_UNKNOWN } from './errors';
-import { END_DAYS } from '../utils/const';
+import { FLEX_END_DAYS } from '../utils/const';
 import { toDateTime } from '../utils/helper';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dateFns = require('date-fns');
@@ -39,9 +39,9 @@ export class DbService {
   ) {
     const now = new Date();
     const stakeStartDate = toDateTime(now.getTime());
-    const stakeEndDate = toDateTime(dateFns.addDays(now, END_DAYS).getTime());
+    const stakeEndDate = toDateTime(dateFns.addDays(now, FLEX_END_DAYS).getTime());
     logger.info(
-      `insertStakeFlex -- addr: ${address} tx: ${txId} amount: ${amount} handle: ${handle} xToken: ${xToken}`,
+      `insertStakeFlex -> addr: ${address}, tx: ${txId}, amount: ${amount}, handle: ${handle}, xToken: ${xToken}`,
     );
 
     const stake = await this.supabase.from(TBL_NAME_STAKE_FLEX).insert({
@@ -64,10 +64,10 @@ export class DbService {
       !stake.data[0].id
     ) {
       if (stake.statusText === 'Conflict') {
-        logger.info(`insertStake -- Conflict error`);
+        logger.info(`insertStake -> Conflict error`);
         return { success: false, error_code: ERROR_DB_DUPLICATED };
       } else {
-        logger.info(`insertStake -- Unknown error`);
+        logger.info(`insertStake -> Unknown error`);
         return { success: false, error_code: ERROR_DB_UNKNOWN };
       }
     }
@@ -102,7 +102,7 @@ export class DbService {
     xToken: string,
   ) {
     logger.info(
-      `insertStakeLocked -- addr: ${address} tx: ${txId} amount: ${amount} xToken: ${xToken}`,
+      `insertStakeLocked -> addr: ${address}, tx: ${txId}, amount: ${amount}, xToken: ${xToken}`,
     );
 
     const stake = await this.supabase.from(TBL_NAME_STAKE_LOCKED).insert({
@@ -128,10 +128,10 @@ export class DbService {
 
   private processInsertStakeError(stake: any) {
     if (stake.statusText === 'Conflict') {
-      logger.info(`insertStakeLocked -- Conflict error`);
+      logger.info(`insertStakeLocked -> Conflict error`);
       return { success: false, error_code: ERROR_DB_DUPLICATED };
     } else {
-      logger.info(`insertStakeLocked -- Unknown error`);
+      logger.info(`insertStakeLocked -> Unknown error`);
       return { success: false, error_code: ERROR_DB_UNKNOWN };
     }
   }
@@ -142,7 +142,7 @@ export class DbService {
     xToken: string,
   ) {
     logger.info(
-      `insertUnstakeLocked -- addr: ${address} tx: ${txId} x_token: ${xToken}`,
+      `insertUnstakeLocked -> addr: ${address} tx: ${txId} x_token: ${xToken}`,
     );
 
     const stake = await this.supabase.from(TBL_NAME_STAKE_LOCKED).insert({

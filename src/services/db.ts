@@ -26,7 +26,7 @@ export class DbService {
     return this.supabase
       .from(TBL_NAME_STAKE_FLEX)
       .select()
-      .match({ status: STATUS_STAKED, address })
+      .match({ address })
       .order('stake_start_date', { ascending: true });
   }
 

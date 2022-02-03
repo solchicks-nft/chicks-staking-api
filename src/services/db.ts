@@ -27,7 +27,7 @@ export class DbService {
       .from(TBL_NAME_STAKE_FLEX)
       .select()
       .match({ address })
-      .order('stake_start_date', { ascending: true });
+      .order('stake_start_date', { ascending: false });
   }
 
   public async insertStakeFlex(

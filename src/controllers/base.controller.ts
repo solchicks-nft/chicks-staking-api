@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { getErrorMessage } from '../services/errors';
 
 /**
  * Provides functions to be used with express routes. Serves common CRUD fuctionality.
@@ -8,13 +9,26 @@ export class BaseController {
 
   constructor() {}
 
+  addErrorMessage(doc: any) {
+    const { success, error_code, ...others } = doc;
+    if (!success && error_code) {
+      return {
+        success,
+        error_code,
+        error_message: getErrorMessage(error_code),
+        ...others,
+      };
+    } else {
+      return doc;
+    }
+  }
   /**
    * Sends the document as JSON in the body of response, and sets status to 200
    * @param doc the document to be returned to the client as JSON
    * @param res the response object that will be used to send http response
    */
   jsonRes(doc: any, res: Response) {
-    res.status(200).json(doc);
+    res.status(200).json(this.addErrorMessage(doc));
   }
 
   /**

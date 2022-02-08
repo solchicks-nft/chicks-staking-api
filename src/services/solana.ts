@@ -1,4 +1,4 @@
-import { clusterApiUrl, Connection } from '@solana/web3.js';
+import { PublicKey, clusterApiUrl, Connection } from '@solana/web3.js';
 import { SOLANA_NETWORK } from '../utils/const';
 import { ERROR_TX_INVALID_STATUS, SUCCESS } from './errors';
 import { logger } from './winston';
@@ -11,6 +11,14 @@ export class SolanaService {
       'confirmed',
     );
     return await connection.getTransaction(txId);
+  }
+
+  public static async getAccountInfo(address: PublicKey) {
+    const connection = new Connection(
+      clusterApiUrl(SOLANA_NETWORK),
+      'confirmed',
+    );
+    return await connection.getAccountInfo(address);
   }
 
   public static async validateTransaction(txId: string) {

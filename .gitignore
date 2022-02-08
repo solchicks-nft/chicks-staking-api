@@ -1,5 +1,7 @@
 /.idea
 node_modules
 /node_modules
-test/*
 *.log
+test.ts
+package-lock.json
+.env

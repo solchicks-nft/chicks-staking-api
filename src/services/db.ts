@@ -3,7 +3,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { logger } from './winston';
 import { ERROR_DB_DUPLICATED, ERROR_DB_UNKNOWN } from './errors';
 import { FLEX_END_DAYS } from '../utils/const';
-import { toDateTime } from '../utils/helper';
+import { toDateTime, toFixed, toTokenDisplay } from '../utils/helper';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dateFns = require('date-fns');
 
@@ -165,5 +165,37 @@ export class DbService {
       return this.processInsertStakeError(stake);
     }
     return { success: true };
+  }
+
+  public async getFlexSummary(offset = 0, limit = 1000) {
+    return this.supabase.rpc('summary_stake_flex', {
+      param_offset: offset,
+      param_limit: limit,
+    });
+  }
+
+  public async getAllFlexSummary() {
+    const allRecords: any[] = [];
+    let offset = 0;
+    const limit = 10_000;
+    while (true) {
+      const result = await this.getFlexSummary(offset, limit);
+      if (result.error) {
+        return { success: false, error: result.error };
+      }
+      if (result.data.length === 0) {
+        break;
+      }
+      result.data.forEach((item) => {
+        const { address, sum_amount, sum_x_amount } = item;
+        allRecords.push({
+          address,
+          token_amount: toFixed(sum_amount),
+          xtoken_amount: toTokenDisplay(sum_x_amount),
+        });
+      });
+      offset += limit;
+    }
+    return { success: true, data: allRecords };
   }
 }

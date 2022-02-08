@@ -190,8 +190,8 @@ export class DbService {
         const { address, sum_amount, sum_x_amount } = item;
         allRecords.push({
           address,
-          amount: toFixed(sum_amount),
-          x_amount: toTokenDisplay(sum_x_amount),
+          token_amount: toFixed(sum_amount),
+          xtoken_amount: toTokenDisplay(sum_x_amount),
         });
       });
       offset += limit;

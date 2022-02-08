@@ -30,6 +30,11 @@ export class FlexibleStakingController extends BaseController {
     this.jsonRes(ret, res);
   }
 
+  public async summary(req: Request, res: Response) {
+    const ret = await this._summary(req);
+    this.jsonRes(ret, res);
+  }
+
   public async _stake(req: Request) {
     const { address, tx_id: txId, amount, handle, x_token } = req.query;
     try {
@@ -100,6 +105,16 @@ export class FlexibleStakingController extends BaseController {
       logger.info(`unstake -> error: ${JSON.stringify(e)}`);
     }
 
+    return { success: false, error_code: ERROR_UNKNOWN };
+  }
+
+  public async _summary(req: Request) {
+    try {
+      const serviceDb = new DbService();
+      return await serviceDb.getAllFlexSummary();
+    } catch (e) {
+      logger.info(`list -> error: ${JSON.stringify(e)}`);
+    }
     return { success: false, error_code: ERROR_UNKNOWN };
   }
 }

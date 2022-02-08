@@ -3,7 +3,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { logger } from './winston';
 import { ERROR_DB_DUPLICATED, ERROR_DB_UNKNOWN } from './errors';
 import { FLEX_END_DAYS } from '../utils/const';
-import {toDateTime, toFixed, toTokenDisplay} from '../utils/helper';
+import { toDateTime, toFixed, toTokenDisplay } from '../utils/helper';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dateFns = require('date-fns');
 

@@ -111,9 +111,10 @@ export class FlexibleStakingController extends BaseController {
   public async _summary(req: Request) {
     try {
       const serviceDb = new DbService();
+      logger.debug(`summary -> request: ${JSON.stringify(req)}`);
       return await serviceDb.getAllFlexSummary();
     } catch (e) {
-      logger.info(`list -> error: ${JSON.stringify(e)}`);
+      logger.info(`summary -> error: ${JSON.stringify(e)}`);
     }
     return { success: false, error_code: ERROR_UNKNOWN };
   }

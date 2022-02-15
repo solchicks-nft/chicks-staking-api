@@ -30,6 +30,10 @@ apiRouter.get(`${base}/flex_list`, (req, res) =>
   flexibleStakingController.list(req, res),
 );
 
+apiRouter.get(`${base}/flex_summary`, (req, res) =>
+  flexibleStakingController.summary(req, res),
+);
+
 apiRouter.get(`${base}/locked_stake`, (req, res) =>
   lockedStakingController.stake(req, res),
 );
@@ -38,6 +42,10 @@ apiRouter.get(`${base}/locked_unstake`, (req, res) =>
   lockedStakingController.unstake(req, res),
 );
 
-apiRouter.get(`${base}/flex_summary`, (req, res) =>
-  flexibleStakingController.summary(req, res),
+apiRouter.get(`${base}/locked_list`, (req, res) =>
+  lockedStakingController.list(req, res),
+);
+
+apiRouter.get(`${base}/locked_summary`, (req, res) =>
+  lockedStakingController.summary(req, res),
 );

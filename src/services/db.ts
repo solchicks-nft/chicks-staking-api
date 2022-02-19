@@ -110,6 +110,7 @@ export class DbService {
     const limit = 10_000;
     while (true) {
       const result = await this.getFlexSummary(offset, limit);
+      // noinspection DuplicatedCode
       if (result.error) {
         return { success: false, error: result.error };
       }
@@ -222,6 +223,7 @@ export class DbService {
     const limit = 10_000;
     while (true) {
       const result = await this.getLockedSummary(pool, offset, limit);
+      // noinspection DuplicatedCode
       if (result.error) {
         return { success: false, error: result.error };
       }

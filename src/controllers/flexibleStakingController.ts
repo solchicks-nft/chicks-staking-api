@@ -80,6 +80,7 @@ export class FlexibleStakingController extends BaseController {
 
   public async _unstake(req: Request) {
     const { address, handle, tx_id: unstakeTxId } = req.query;
+    // noinspection DuplicatedCode
     logger.info(`unstake -> address: ${address as string}`);
     logger.info(`unstake -> handle: ${handle as string}`);
     logger.info(`unstake -> tx_id: ${unstakeTxId as string}`);
@@ -108,7 +109,7 @@ export class FlexibleStakingController extends BaseController {
     return { success: false, error_code: ERROR_UNKNOWN };
   }
 
-  public async _summary(req: Request) {
+  public async _summary(_req: Request) {
     try {
       const serviceDb = new DbService();
       return await serviceDb.getAllFlexSummary();

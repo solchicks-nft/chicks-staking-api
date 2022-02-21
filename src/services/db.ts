@@ -2,9 +2,13 @@ import { config } from 'dotenv';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { logger } from './winston';
 import { ERROR_DB_DUPLICATED, ERROR_DB_UNKNOWN } from './errors';
-import { FLEX_END_DAYS } from '../utils/const';
+import {
+  FLEX_END_DAYS,
+  LOCKED_END_DAYS_MONTH12,
+  LOCKED_END_DAYS_MONTH4,
+  LOCKED_END_DAYS_MONTH8,
+} from '../utils/const';
 import { toDateTime, toFixed, toTokenDisplay } from '../utils/helper';
-import {start} from "repl";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dateFns = require('date-fns');
 
@@ -154,11 +158,18 @@ export class DbService {
     const startTime: number = start_time ? parseInt(start_time) : 0;
     const now = startTime > 0 ? new Date(startTime * 1000) : new Date();
     const stakeStartDate = toDateTime(now.getTime());
+    let lockedEndDays = LOCKED_END_DAYS_MONTH4;
+    if (pool === 2) {
+      lockedEndDays = LOCKED_END_DAYS_MONTH8;
+    }
+    if (pool === 3) {
+      lockedEndDays = LOCKED_END_DAYS_MONTH12;
+    }
     const stakeEndDate = toDateTime(
-      dateFns.addDays(now, FLEX_END_DAYS).getTime(),
+      dateFns.addDays(now, lockedEndDays).getTime(),
     );
     logger.info(
-      `insertStakeLocked -> address: ${address}, tx: ${txId}, amount: ${amount}, handle: ${handle}, xToken: ${xToken}`,
+      `insertStakeLocked -> pool: ${pool}, address: ${address}, tx: ${txId}, amount: ${amount}, handle: ${handle}, xToken: ${xToken}`,
     );
 
     const stake = await this.supabase.from(TBL_NAME_STAKE_LOCKED).insert({

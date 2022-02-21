@@ -36,7 +36,15 @@ export class LockedStakingController extends BaseController {
   }
 
   public async _stake(req: Request) {
-    const { pool, address, tx_id: txId, amount, handle, x_token } = req.query;
+    const {
+      pool,
+      address,
+      tx_id: txId,
+      amount,
+      handle,
+      x_token,
+      start_time,
+    } = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(txId as string);
       if (checkCode !== SUCCESS) {
@@ -56,6 +64,7 @@ export class LockedStakingController extends BaseController {
         amount as string,
         handle as string,
         x_token as string,
+        start_time as string,
       );
     } catch (e) {
       logger.info(`stake -> error: ${JSON.stringify(e)}`);

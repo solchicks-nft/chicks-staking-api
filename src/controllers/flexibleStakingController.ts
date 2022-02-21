@@ -36,7 +36,14 @@ export class FlexibleStakingController extends BaseController {
   }
 
   public async _stake(req: Request) {
-    const { address, tx_id: txId, amount, handle, x_token } = req.query;
+    const {
+      address,
+      tx_id: txId,
+      amount,
+      handle,
+      x_token,
+      start_time,
+    } = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(txId as string);
       if (checkCode !== SUCCESS) {
@@ -55,6 +62,7 @@ export class FlexibleStakingController extends BaseController {
         amount as string,
         handle as string,
         x_token as string,
+        start_time as string,
       );
     } catch (e) {
       logger.info(`stake -> error: ${JSON.stringify(e)}`);

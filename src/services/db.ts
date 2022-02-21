@@ -4,6 +4,7 @@ import { logger } from './winston';
 import { ERROR_DB_DUPLICATED, ERROR_DB_UNKNOWN } from './errors';
 import { FLEX_END_DAYS } from '../utils/const';
 import { toDateTime, toFixed, toTokenDisplay } from '../utils/helper';
+import {start} from "repl";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dateFns = require('date-fns');
 
@@ -36,8 +37,10 @@ export class DbService {
     amount: string,
     handle: string,
     xToken: string,
+    start_time: string,
   ) {
-    const now = new Date();
+    const startTime: number = start_time ? parseInt(start_time) : 0;
+    const now = startTime > 0 ? new Date(startTime * 1000) : new Date();
     const stakeStartDate = toDateTime(now.getTime());
     const stakeEndDate = toDateTime(
       dateFns.addDays(now, FLEX_END_DAYS).getTime(),
@@ -145,8 +148,10 @@ export class DbService {
     amount: string,
     handle: string,
     xToken: string,
+    start_time: string,
   ) {
-    const now = new Date();
+    const startTime: number = start_time ? parseInt(start_time) : 0;
+    const now = startTime > 0 ? new Date(startTime * 1000) : new Date();
     const stakeStartDate = toDateTime(now.getTime());
     const stakeEndDate = toDateTime(
       dateFns.addDays(now, FLEX_END_DAYS).getTime(),

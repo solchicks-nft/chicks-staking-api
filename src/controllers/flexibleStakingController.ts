@@ -36,7 +36,14 @@ export class FlexibleStakingController extends BaseController {
   }
 
   public async _stake(req: Request) {
-    const { address, tx_id: txId, amount, handle, x_token } = req.query;
+    const {
+      address,
+      tx_id: txId,
+      amount,
+      handle,
+      x_token,
+      start_time,
+    } = req.query;
     try {
       const checkCode = await SolanaService.validateTransaction(txId as string);
       if (checkCode !== SUCCESS) {
@@ -55,6 +62,7 @@ export class FlexibleStakingController extends BaseController {
         amount as string,
         handle as string,
         x_token as string,
+        start_time as string,
       );
     } catch (e) {
       logger.info(`stake -> error: ${JSON.stringify(e)}`);
@@ -80,6 +88,7 @@ export class FlexibleStakingController extends BaseController {
 
   public async _unstake(req: Request) {
     const { address, handle, tx_id: unstakeTxId } = req.query;
+    // noinspection DuplicatedCode
     logger.info(`unstake -> address: ${address as string}`);
     logger.info(`unstake -> handle: ${handle as string}`);
     logger.info(`unstake -> tx_id: ${unstakeTxId as string}`);
@@ -108,7 +117,7 @@ export class FlexibleStakingController extends BaseController {
     return { success: false, error_code: ERROR_UNKNOWN };
   }
 
-  public async _summary(req: Request) {
+  public async _summary(_req: Request) {
     try {
       const serviceDb = new DbService();
       return await serviceDb.getAllFlexSummary();

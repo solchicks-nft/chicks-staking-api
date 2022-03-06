@@ -42,6 +42,10 @@ apiRouter.get(`${base}/locked_unstake`, (req, res) =>
   lockedStakingController.unstake(req, res),
 );
 
+apiRouter.get(`${base}/locked_reward`, (req, res) =>
+  lockedStakingController.reward(req, res),
+);
+
 apiRouter.get(`${base}/locked_list`, (req, res) =>
   lockedStakingController.list(req, res),
 );

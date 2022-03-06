@@ -18,7 +18,10 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string;
 const TBL_NAME_STAKE_FLEX = 'stake_flex';
 const TBL_NAME_STAKE_LOCKED = 'stake_locked';
 const STATUS_STAKED = 0;
-const STATUS_CLAIMED = 2;
+
+const STATUS_UNSTAKED = 1;
+
+const STATUS_REWARDED = 2;
 
 export class DbService {
   private supabase: SupabaseClient;
@@ -93,7 +96,7 @@ export class DbService {
     const result = await this.supabase
       .from(TBL_NAME_STAKE_FLEX)
       .update({
-        status: STATUS_CLAIMED,
+        status: STATUS_UNSTAKED,
         unstake_tx_hash: unstakeTxId,
         stake_claim_date: stakeClaimDate,
       })
@@ -168,6 +171,11 @@ export class DbService {
     const stakeEndDate = toDateTime(
       dateFns.addDays(now, lockedEndDays).getTime(),
     );
+
+    const rewardStartDate = toDateTime(
+      dateFns.addDays(now, lockedEndDays * 2).getTime()
+    );
+
     logger.info(
       `insertStakeLocked -> pool: ${pool}, address: ${address}, tx: ${txId}, amount: ${amount}, handle: ${handle}, xToken: ${xToken}`,
     );
@@ -179,6 +187,7 @@ export class DbService {
       amount: amount,
       stake_start_date: stakeStartDate,
       stake_end_date: stakeEndDate,
+      reward_start_date: rewardStartDate,
       status: STATUS_STAKED,
       handle,
       x_token: xToken,
@@ -208,14 +217,38 @@ export class DbService {
     address: string,
     handle: string,
     unstakeTxId: string,
+    reward: string
   ) {
     const now = new Date();
     const stakeClaimDate = toDateTime(now.getTime());
     const result = await this.supabase
       .from(TBL_NAME_STAKE_LOCKED)
       .update({
-        status: STATUS_CLAIMED,
+        status: STATUS_UNSTAKED,
         unstake_tx_hash: unstakeTxId,
+        stake_claim_date: stakeClaimDate,
+        reward: reward
+      })
+      .match({ pool, handle, address });
+    if (!result || result.error) {
+      return { success: false, error_code: ERROR_DB_UNKNOWN };
+    }
+    return { success: true };
+  }
+
+  public async rewardLocked(
+    pool: number,
+    address: string,
+    handle: string,
+    rewardTxId: string,
+  ) {
+    const now = new Date();
+    const stakeClaimDate = toDateTime(now.getTime());
+    const result = await this.supabase
+      .from(TBL_NAME_STAKE_LOCKED)
+      .update({
+        status: STATUS_REWARDED,
+        reward_tx_hash: rewardTxId,
         stake_claim_date: stakeClaimDate,
       })
       .match({ pool, handle, address });
@@ -224,6 +257,7 @@ export class DbService {
     }
     return { success: true };
   }
+
 
   public async getLockedSummary(pool: number, offset = 0, limit = 1000) {
     return this.supabase.rpc('summary_stake_locked', {

@@ -25,6 +25,11 @@ export class LockedStakingController extends BaseController {
     this.jsonRes(ret, res);
   }
 
+  public async reward(req: Request, res: Response) {
+    const ret = await this._reward(req);
+    this.jsonRes(ret, res);
+  }
+
   public async list(req: Request, res: Response) {
     const ret = await this._list(req);
     this.jsonRes(ret, res);
@@ -122,6 +127,43 @@ export class LockedStakingController extends BaseController {
 
     return { success: false, error_code: ERROR_UNKNOWN };
   }
+
+
+
+  public async _reward(req: Request) {
+    const { pool, address, handle, tx_id: rewardTxId } = req.query;
+    // noinspection DuplicatedCode
+    logger.info(`reward -> address: ${address as string}`);
+    logger.info(`reward -> handle: ${handle as string}`);
+    logger.info(`reward -> tx_id: ${rewardTxId as string}`);
+    try {
+      const checkCode = await SolanaService.validateTransaction(
+        rewardTxId as string,
+      );
+      if (checkCode !== SUCCESS) {
+        return { success: false, error_code: checkCode };
+      }
+    } catch (e) {
+      return { success: false, error_code: ERROR_TX_INVALID_INPUT_UNKNOWN };
+    }
+
+    try {
+      const serviceDb = new DbService();
+      return await serviceDb.rewardLocked(
+        parseInt(pool as string),
+        address as string,
+        handle as string,
+        rewardTxId as string,
+      );
+    } catch (e) {
+      logger.info(`reward -> error: ${JSON.stringify(e)}`);
+    }
+
+    return { success: false, error_code: ERROR_UNKNOWN };
+  }
+
+
+  
 
   public async _summary(req: Request) {
     const { pool } = req.query;

@@ -217,7 +217,6 @@ export class DbService {
     address: string,
     handle: string,
     unstakeTxId: string,
-    reward: string
   ) {
     const now = new Date();
     const stakeClaimDate = toDateTime(now.getTime());
@@ -227,7 +226,6 @@ export class DbService {
         status: STATUS_UNSTAKED,
         unstake_tx_hash: unstakeTxId,
         stake_claim_date: stakeClaimDate,
-        reward: reward
       })
       .match({ pool, handle, address });
     if (!result || result.error) {

@@ -128,8 +128,6 @@ export class LockedStakingController extends BaseController {
     return { success: false, error_code: ERROR_UNKNOWN };
   }
 
-
-
   public async _reward(req: Request) {
     const { pool, address, handle, tx_id: rewardTxId } = req.query;
     // noinspection DuplicatedCode
@@ -161,9 +159,6 @@ export class LockedStakingController extends BaseController {
 
     return { success: false, error_code: ERROR_UNKNOWN };
   }
-
-
-  
 
   public async _summary(req: Request) {
     const { pool } = req.query;
